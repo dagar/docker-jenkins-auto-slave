@@ -1,23 +1,26 @@
 FROM openjdk:8-slim
-LABEL maintainer="Alex Simenduev <shamil.si@gmail.com>"
+LABEL maintainer="Daniel Agar <daniel@agar.ca>"
 
 # those are allowed to be changed at build time`
 ARG user=jenkins
 ARG group=jenkins
 ARG uid=1000
 ARG gid=1000
-ARG git_lfs_version=2.3.4
 
-ENV JENKINS_HOME=/var/jenkins_home \
+ENV JENKINS_HOME=/tmp/jenkins \
     JENKINS_USER=${user}
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl dumb-init git libltdl7 openssh-client \
+    && apt-get install -y --no-install-recommends \
+	curl \
+	dumb-init \
+	gdb-arm-none-eabi \
+	git \
+	libltdl7 \
+	openssh-client \
+	python-serial \
+	screen \
     && rm -rf /var/lib/apt/lists/* \
-    # install git LFS
-    && curl -#LSo git-lfs.deb https://packagecloud.io/github/git-lfs/packages/debian/stretch/git-lfs_${git_lfs_version}_amd64.deb/download.deb \
-    && dpkg -i git-lfs.deb \
-    && rm -f git-lfs.deb \
     \
     # Jenkins is run with user `jenkins`, uid = 1000
     # If you bind mount a volume from the host or a data container,
@@ -28,10 +31,6 @@ RUN apt-get update \
     # Tweak global SSH client configuration
     && sed -i '/^Host \*/a \ \ \ \ ServerAliveInterval 30' /etc/ssh/ssh_config \
     && sed -i '/^Host \*/a \ \ \ \ StrictHostKeyChecking no' /etc/ssh/ssh_config
-
-# Jenkins home directory is a volume, so configuration and build history
-# can be persisted and survive image upgrades
-VOLUME $JENKINS_HOME
 
 COPY jenkins-slave /usr/local/bin/jenkins-slave
 RUN chmod +x /usr/local/bin/jenkins-slave

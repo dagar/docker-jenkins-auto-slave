@@ -11,7 +11,7 @@ most used variables:
 - `JENKINS_AUTH` jenkins server username and either password or API token (in `user:secet` format)
 - `JENKINS_URL` jenkins master url (example `http://localhost:8080`)
 - `JENKINS_SLAVE_NAME` the name which will be used when registering (default is `$HOSTNAME`)
-- `JENKINS_SLAVE_NUM_EXECUTORS` number of executors to use (defaults to `1`)
+- `JENKINS_SLAVE_LABELS` 
 
 less used and can keep the defaults
 
@@ -57,8 +57,7 @@ $ docker run -d \
     --net host \
     -e JENKINS_URL=http://jenkins.internal.domain:8080 \
     -e JENKINS_AUTH=registrator:1234567890123456789012  \
-    -v /any/path/you/like:/var/jenkins_home \
-    simenduev/jenkins-auto-slave
+    dagar/jenkins-auto-slave
 ```
 
 > Mounting of `/var/jenkins_home` volume is required in order for agent to be able to build jobs.
@@ -70,7 +69,6 @@ $ docker run -d \
     --net host \
     -e JENKINS_URL=http://jenkins.internal.domain:8080 \
     -e JENKINS_AUTH=registrator:1234567890123456789012  \
-    -v /any/path/you/like:/var/jenkins_home \
     -v /run/docker.sock:/run/docker.sock \
     -v /usr/bin/docker:/usr/bin/docker \
     simenduev/jenkins-auto-slave
