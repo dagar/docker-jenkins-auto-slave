@@ -8,7 +8,7 @@ DOCKER_SOCKET="${DOCKER_SOCKET:-/var/run/docker.sock}"
 JENKINS_HOME=${JENKINS_HOME:-/tmp/jenkins/home}
 JENKINS_USER=${JENKINS_USER:-jenkins}
 
-JENKINS_SLAVE_NAME=${JENKINS_SLAVE_NAME:-$(hostname)}-${JENKINS_SLAVE_LABELS}
+JENKINS_SLAVE_NAME=${JENKINS_SLAVE_NAME}
 JENKINS_SLAVE_REMOTE_FS="$JENKINS_HOME"
 
 download_slave_jar() {
@@ -67,9 +67,11 @@ jenkins_cli get-node "$JENKINS_SLAVE_NAME" &>/dev/null || {
     jenkins_cli create-node "$JENKINS_SLAVE_NAME" <<< "$CONFIG"
 }
 
-# run slave
-su $JENKINS_USER - -c \
-    "java $JAVA_OPTS -jar '$DOWNLOAD_DIR/slave.jar' -jnlpCredentials '$JENKINS_AUTH' -jnlpUrl '$JENKINS_URL/computer/$JENKINS_SLAVE_NAME/slave-agent.jnlp'"
+# run jenkins slave
+su $JENKINS_USER - -c "java $JAVA_OPTS -jar '$DOWNLOAD_DIR/slave.jar' -jnlpCredentials '$JENKINS_AUTH' -jnlpUrl '$JENKINS_URL/computer/$JENKINS_SLAVE_NAME/slave-agent.jnlp'" &
+
+# run JLink
+su $JENKINS_USER - -c "JLinkGDBServerCLExe -device ${JENKINS_JLINK_DEVICE} -select usb=${JENKINS_JLINK_SERIAL} -endian little -if SWD -speed auto -LocalhostOnly 1 -strict -vd"
 
 # exit gracefully
 exit 0

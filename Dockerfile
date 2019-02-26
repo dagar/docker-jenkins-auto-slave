@@ -10,19 +10,24 @@ ARG gid=1000
 ENV JENKINS_HOME=/tmp/jenkins \
     JENKINS_USER=${user}
 
-RUN apt-get update \
+COPY JLink_Linux_V642f_x86_64.deb /tmp/jlink.deb
+
+RUN dpkg -i /tmp/jlink.deb && rm -rf /tmp/jlink.deb \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
 	curl \
 	default-jre-headless \
 	dumb-init \
 	gcc-arm-none-eabi \
 	gdb \
+	gdb-multiarch \
 	git \
 	libltdl7 \
 	openssh-client \
 	python-serial \
 	screen \
-    && rm -rf /var/lib/apt/lists/* \
+	usbutils \
+    && rm -rf /var/lib/apt/lists/* /tmp/* \
     \
     # Jenkins is run with user `jenkins`, uid = 1000
     # If you bind mount a volume from the host or a data container,

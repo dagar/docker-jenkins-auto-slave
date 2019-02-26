@@ -74,4 +74,20 @@ $ docker run -d \
     simenduev/jenkins-auto-slave
 ```
 
+
+Example: px4fmu-v2
+
+```sh
+$ docker run \
+        --rm \
+        --detach \
+        --device=/dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_E2C3DAC5-if00 \
+        --device=/dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_E2C3DAC5-if02 \
+        -e JENKINS_AUTH=px4buildbot:d0b7b7496f8ac358729cd5685762b491 \
+        -e JENKINS_SLAVE_LABELS="px4fmu-v2" \
+        -e JENKINS_SLAVE_NAME=hil \
+        -e JENKINS_URL=http://ci.px4.io:8080 \
+        danielagar/docker-jenkins-auto-slave:latest
+```
+
 ***
